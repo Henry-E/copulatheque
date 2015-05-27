@@ -255,4 +255,24 @@ shinyServer(function(input, output) {
     }
   }, height="auto")
   
+    output$tailDepedencePlot <- renderPlot({
+    set.seed(input$seed)
+    data <- rCopula(input$numObs, cop())
+    aggregationRanked <- data.frame(apply(data, 2, function(x){ rank(x, ties.method = "first") }))
+    
+    percentageObservations <- seq(min(input$bounds), max(input$bounds), by=input$percentageStep)
+    rankCutoffs <- percentageObservations * input$numObs
+    
+    lowestValues <- pmin(aggregationRanked[, 1], aggregationRanked[, 2])
+    lowestValuesSorted <- sort(lowestValues)
+    
+    observedValues <- length(lowestValuesSorted) - 
+                            findInterval(rankCutoffs, lowestValuesSorted)
+    plotOutput <- data.frame( percentageObservations, observedValues )
+    plotOutput$observedValues <- plotOutput$observedValues / (length(lowestValuesSorted) - rankCutoffs)
+    plot(x = plotOutput$percentageObservations, y = plotOutput$observedValues, type = "l",
+         xlab = "Distribution percentile", ylab = "Conditional exceedance probability")               
+  
+})
+  
 })
