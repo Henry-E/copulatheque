@@ -192,7 +192,7 @@ shinyUI(pageWithSidebar(
                                 sliderInput("percentageStep", label="percentage Step", 
                                             min=0.00001, max=0.05, value=0.005, step=0.00005),
                                 sliderInput("seed", label="random number seed",
-                                            min=1, max=100, value=1, step=1))
+                                            min=1, max=100, value=1, step=1, animate=TRUE))
                ),
   
   mainPanel(
