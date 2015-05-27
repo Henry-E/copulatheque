@@ -179,14 +179,31 @@ shinyUI(pageWithSidebar(
                                 plotOutput("corFunPlot", height=300)),
                
                # sample length
-               conditionalPanel(condition = "input.family != 'spCopula'",
+               conditionalPanel(condition = "input.family != 'spCopula' && input.tab != 'tailDepedence'",
                                 sliderInput("sampleSize", "sample size (set to minimum for a contour plot):",
-                                            min=10, max=1000, value=250, step=1)
-                                )),
+                                            min=10, max=1000, value=250, step=1)),
+               
+               # Conditional tail depedence graph options
+               conditionalPanel(condition = "input.tab == 'tailDepedence'",
+                                sliderInput("numObs", label="sample size",
+                                            min=1000, max=50000, value=20000, step=1000),
+                                sliderInput("bounds", label="percentage Bounds", 
+                                            min=0, max=1, value = c(0,1) , step=0.0001),
+                                sliderInput("percentageStep", label="percentage Step", 
+                                            min=0.00001, max=0.05, value=0.005, step=0.00005),
+                                sliderInput("seed", label="random number seed",
+                                            min=1, max=100, value=1, step=1))
+               ),
   
   mainPanel(
-    h3(textOutput("caption")),
-    plotOutput("copulaPlots"),
-    textOutput("kendallsTau"),
-    textOutput("tailIndex"))  
+    tabsetPanel(type = "tabs", id = "tab",
+            tabPanel("Sample Plot", value = "normalPlot",
+                h3(textOutput("caption")),
+                plotOutput("copulaPlots"),
+                textOutput("kendallsTau"),
+                textOutput("tailIndex")),
+            tabPanel("Conditional Tail Dependence Plot", value = "tailDepedence",
+                plotOutput("tailDepedencePlot"))
+            )
+  ) 
 ))
